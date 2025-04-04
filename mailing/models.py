@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
+
 
 class Client(models.Model):
     """Получатель рассылки(модель клиента)"""
@@ -41,7 +41,7 @@ class Mailing(models.Model):
     STATUS_CHOICES = [
         ('created', 'Создана'),
         ('started', 'Запущена'),
-        ('failed', 'Ошибка'),
+        ('completed', 'Завершена'),
         ]
 
     start_time = models.DateTimeField(auto_now_add=True, verbose_name='Дата первой отправки')
@@ -52,7 +52,11 @@ class Mailing(models.Model):
         choices=STATUS_CHOICES,
         default='created',
     )
-    message = models.ForeignKey(Message, verbose_name='Сообщение', on_delete=models.CASCADE)
+    is_active = models.BooleanField(
+        default=True, verbose_name="активна", null=True, blank=True
+    )
+    message = models.ForeignKey(Message, verbose_name='Сообщение', on_delete=models.CASCADE, null=True,
+        blank=True,)
     clients = models.ManyToManyField(Client, verbose_name='Клиенты', related_name='Получатели')
     owner = models.ForeignKey(User, verbose_name='Владелец', blank=True, null=True, on_delete=models.SET_NULL,)
 
@@ -75,11 +79,13 @@ class MailingAttempt(models.Model):
     date_time_attempt = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время попытки')
     sending_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='success', verbose_name='Статус попытки рассылки',)
 
+    def __str__(self):
+        return f"{self.date_time_attempt} '{self.sending_status}'"
 
-        class Meta:
-            verbose_name = 'Попытка рассылки'
-            verbose_name_plural = 'Попытки рассылки'
-            ordering = [' ']
+    class Meta:
+        verbose_name = 'Попытка рассылки'
+        verbose_name_plural = 'Попытки рассылки'
+        ordering = ['date_time_attempt', 'sending_status']
 
 
 
