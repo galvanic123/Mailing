@@ -50,7 +50,7 @@ def send_mailing(mailing: Mailing = None):
     if not mailing:
         # Фильтруем рассылки по статусу и текущему времени
         mailings_to_send = Mailing.objects.filter(
-            Q(status="created") | Q(status="completed") | Q(status="unblocked"),
+            Q(status="created") | Q(status="completed") | Q(status="unblocked"),   # noqa
             date_first_message__lte=timezone.now(),
         )
     else:

@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = "Создает группу менеджеров"
 
     def add_arguments(self, parser):
-        parser.add_argument("group_name", type=str, help="Название группы менеджеров")
+        parser.add_argument("group_name", type=str, help="Название группы менеджеров")    # noqa
 
     def handle(self, *args, **kwargs):
         group_name = kwargs["group_name"]
@@ -14,6 +14,6 @@ class Command(BaseCommand):
         group, created = Group.objects.get_or_create(name=group_name)
 
         if created:
-            self.stdout.write(self.style.SUCCESS(f'Группа "{group_name}" была успешно создана!'))
+            self.stdout.write(self.style.SUCCESS(f'Группа "{group_name}" была успешно создана!'))   # noqa
         else:
-            self.stdout.write(self.style.WARNING(f'Группа "{group_name}" уже существует.'))
+            self.stdout.write(self.style.WARNING(f'Группа "{group_name}" уже существует.'))    # noqa

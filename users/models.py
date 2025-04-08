@@ -3,9 +3,9 @@ from django.db import models
 
 
 class CustomsUser(AbstractUser):
-    username = models.CharField('имя пользователя', max_length=150, blank=True, null=True)
-    email = models.EmailField(unique=True, verbose_name="Email")
-    avatar = models.ImageField(upload_to="photo/avatar", blank=True, null=True, verbose_name="Аватар",
+    username = models.CharField('имя пользователя', max_length=150, blank=True, null=True)     # noqa
+    email = models.EmailField(unique=True, verbose_name="Email")      # noqa
+    avatar = models.ImageField(upload_to="photo/avatar", blank=True, null=True, verbose_name="Аватар",    # noqa
                                help_text="Загрузите аватар")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)

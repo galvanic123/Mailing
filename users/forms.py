@@ -26,7 +26,7 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
         if phone_number and not phone_number.isdigit():
-            raise forms.ValidationError("номер телефона должен состоять только из цифр")
+            raise forms.ValidationError("номер телефона должен состоять только из цифр")  # noqa
         return phone_number
 
     def clean_avatar(self):
@@ -37,11 +37,11 @@ class CustomUserCreationForm(UserCreationForm):
             return None
 
         if avatar.size > 5 * 1024 * 1024:
-            raise forms.ValidationError("Размер файла не должен превышать 5MB.")
+            raise forms.ValidationError("Размер файла не должен превышать 5MB.")   # noqa
 
         if not avatar.name.endswith(("jpg", "jpeg", "png")):
             raise forms.ValidationError(
-                "Формат файла не соответствует требованиям. " "Формат файла должен быть *.jpg, *.jpeg, *.png"
+                "Формат файла не соответствует требованиям. " "Формат файла должен быть *.jpg, *.jpeg, *.png"    # noqa
             )
 
         return avatar

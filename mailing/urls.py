@@ -27,13 +27,13 @@ app_name = MailingConfig.name
 
 urlpatterns = [
     path("home/", MailingHomeView.as_view(), name="home"),
-    path("recipient_create/", RecipientCreateView.as_view(), name="recipient_create"),
+    path("recipient_create/", RecipientCreateView.as_view(), name="recipient_create"),   # noqa
     path(
         "recipient/<int:pk>/delete/",
         RecipientDeleteView.as_view(),
         name="recipient_delete",
     ),
-    path("recipient_list/", cache_page(30)(RecipientListView.as_view()), name="recipient_list"),
+    path("recipient_list/", cache_page(30)(RecipientListView.as_view()), name="recipient_list"),    # noqa
     path(
         "recipient_detail/<int:pk>/",
         RecipientDetailView.as_view(),
@@ -44,27 +44,27 @@ urlpatterns = [
         RecipientUpdateView.as_view(),
         name="recipient_update",
     ),
-    path("message_create/", MessageCreateView.as_view(), name="message_create"),
+    path("message_create/", MessageCreateView.as_view(), name="message_create"),    # noqa
     path(
-        "message/<int:pk>/delete/", MessageDeleteView.as_view(), name="message_delete"
+        "message/<int:pk>/delete/", MessageDeleteView.as_view(), name="message_delete"    # noqa
     ),
-    path("message_list/", cache_page(30)(MessageListView.as_view()), name="message_list"),
+    path("message_list/", cache_page(30)(MessageListView.as_view()), name="message_list"),    # noqa
     path(
-        "message_detail/<int:pk>/", MessageDetailView.as_view(), name="message_detail"
+        "message_detail/<int:pk>/", MessageDetailView.as_view(), name="message_detail"   # noqa
     ),
     path(
-        "message_update/<int:pk>/", MessageUpdateView.as_view(), name="message_update"
+        "message_update/<int:pk>/", MessageUpdateView.as_view(), name="message_update"   # noqa
     ),
-    path("mailing_create/", MailingCreateView.as_view(), name="mailing_create"),
+    path("mailing_create/", MailingCreateView.as_view(), name="mailing_create"),     # noqa
     path(
-        "mailing/<int:pk>/delete/", MailingDeleteView.as_view(), name="mailing_delete"
+        "mailing/<int:pk>/delete/", MailingDeleteView.as_view(), name="mailing_delete"   # noqa
     ),
     path("mailing_list/", MailingListView.as_view(), name="mailing_list"),
     path(
-        "mailing_detail/<int:pk>/", MailingDetailView.as_view(), name="mailing_detail"
+        "mailing_detail/<int:pk>/", MailingDetailView.as_view(), name="mailing_detail"   # noqa
     ),
     path(
-        "mailing_update/<int:pk>/", MailingUpdateView.as_view(), name="mailing_update"
+        "mailing_update/<int:pk>/", MailingUpdateView.as_view(), name="mailing_update"    # noqa
     ),
     path("<int:pk>", SendMailingView.as_view(), name="send_mailing"),
     path(

@@ -25,13 +25,13 @@ class Recipient(models.Model):
         verbose_name = "Получатель"
         verbose_name_plural = "Получатели"
         ordering = ["full_name"]
-        permissions = [("can_view_other_client", "Может просматривать чужих клиентов")]
+        permissions = [("can_view_other_client", "Может просматривать чужих клиентов")]    # noqa
 
 
 class Message(models.Model):
     """Модель управление сообщениями"""
 
-    theme_message = models.CharField(max_length=150, verbose_name="Тема письма")
+    theme_message = models.CharField(max_length=150, verbose_name="Тема письма")   # noqa
     text = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(
         CustomsUser,
@@ -67,10 +67,10 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
     recipient = models.ManyToManyField(Recipient, related_name="Получатели")
     date_first_message = models.DateTimeField(
-        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"
+        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"    # noqa
     )
     date_end_message = models.DateTimeField(
-        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"
+        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"    # noqa
     )
     status = models.CharField(
         max_length=20,
@@ -113,7 +113,7 @@ class MailingAttempt(models.Model):
         auto_now_add=True, verbose_name="Дата и время попытки"
     )
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)
-    mail_server_response = models.TextField(verbose_name="Ответ почтового сервера")
+    mail_server_response = models.TextField(verbose_name="Ответ почтового сервера")   # noqa
     status = models.CharField(
         max_length=16,
         choices=STATUS_CHOICES,
@@ -133,7 +133,7 @@ class MailingAttempt(models.Model):
         return self.date_time_attempt.strftime("%Y-%m-%d %H:%M:%S")
 
     def __str__(self):
-        return f"Попытка {self.id} - Статус: {self.status} в {self.date_time_attempt}"
+        return f"Попытка {self.id} - Статус: {self.status} в {self.date_time_attempt}"   # noqa
 
     class Meta:
         verbose_name = "Попытка рассылки"

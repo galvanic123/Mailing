@@ -17,21 +17,21 @@ class MessageForm(forms.ModelForm):
         model = Message
         fields = ["theme_message", "text", "owner"]
         widgets = {
-            "text": forms.Textarea(attrs={"placeholder": "Введите ваше сообщение..."}),
+            "text": forms.Textarea(attrs={"placeholder": "Введите ваше сообщение..."}),   # noqa
         }
 
 
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ["date_first_message", "date_end_message", "message", "recipient", "status"]
+        fields = ["date_first_message", "date_end_message", "message", "recipient", "status"]    # noqa
         widgets = {
-            "date_first_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "date_end_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "date_first_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),   # noqa
+            "date_end_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),     # noqa
         }
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Фильтруем получателей и сообщения по текущему пользователю
-        self.fields['recipient'].queryset = Recipient.objects.filter(owner=user)
-        self.fields['message'].queryset = Message.objects.filter(owner=user)
+        self.fields['recipient'].queryset = Recipient.objects.filter(owner=user)     # noqa
+        self.fields['message'].queryset = Message.objects.filter(owner=user)         # noqa

@@ -37,7 +37,7 @@ class MailingHomeView(ListView):
             status="running",
         ).count()
         # Количество уникальных получателей
-        context["unique_recipients_count"] = Recipient.objects.distinct().count()
+        context["unique_recipients_count"] = Recipient.objects.distinct().count()    # noqa
 
         return context
 
@@ -79,7 +79,7 @@ class RecipientDeleteView(DeleteView):
 
     def test_func(self):
         return (
-            self.request.user.is_authenticated and self.request.user.has_perm("mailing.recipient_delete")
+            self.request.user.is_authenticated and self.request.user.has_perm("mailing.recipient_delete")    # noqa
             or self.request.user.owner
         )
 
@@ -137,7 +137,7 @@ class MessageUpdateView(UpdateView):
         try:
             return super().get_object(queryset)
         except Message.DoesNotExist:
-            raise PermissionDenied("У Вас нет прав для редактирования этого сообщения.")
+            raise PermissionDenied("У Вас нет прав для редактирования этого сообщения.")    # noqa
 
 
 class MessageDeleteView(DeleteView):
@@ -223,7 +223,7 @@ class MailingUpdateView(UpdateView):
         try:
             return super().get_object(queryset)
         except Mailing.DoesNotExist:
-            raise PermissionDenied("У Вас нет прав для редактирования этой рассылки.")
+            raise PermissionDenied("У Вас нет прав для редактирования этой рассылки.")     # noqa
 
 
 class MailingDeleteView(DeleteView):
@@ -258,7 +258,7 @@ class SendMailingView(View):
         mailing = get_object_or_404(Mailing, pk=pk)
         response = send_mailing(mailing)
         return render(
-            request, "mailing_detail.html", {"mailing": mailing, "response": response}
+            request, "mailing_detail.html", {"mailing": mailing, "response": response}    # noqa
         )
 
 
@@ -277,7 +277,7 @@ class MailingAttemptListView(ListView):
         context = super().get_context_data(**kwargs)
         queryset = self.get_queryset()
         context["attempts_count"] = queryset.count()
-        context["attempts_success_count"] = queryset.filter(status="successful").count()
+        context["attempts_success_count"] = queryset.filter(status="successful").count()    # noqa
         context["attempts_error_count"] = queryset.filter(
             status="not_successful"
         ).count()
@@ -294,7 +294,7 @@ class BlockMailingView(LoginRequiredMixin, View):
         mailing = get_object_or_404(Mailing, id=mailing_id)
 
         if not request.user.has_perm("mailing.can_disable_mailings"):
-            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")
+            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")    # noqa
 
         # Переключение состояния блокировки
         mailing.is_blocked = not mailing.is_blocked

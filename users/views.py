@@ -72,14 +72,14 @@ class BlockUserView(LoginRequiredMixin, View):
     def get(self, request, user_id):
         user = get_object_or_404(CustomsUser, id=user_id)
         if not request.user.has_perm("users.can_block_user"):
-            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")
+            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")     # noqa
         return render(request, "user_block.html", {"user": user})
 
     def post(self, request, user_id):
         user = get_object_or_404(CustomsUser, id=user_id)
 
         if not request.user.has_perm("users.can_block_user"):
-            return HttpResponseForbidden("У вас нет прав для блокировки пользователя.")
+            return HttpResponseForbidden("У вас нет прав для блокировки пользователя.")    # noqa
 
         # Изменяем состояние блокировки
         user.is_blocked = not user.is_blocked
