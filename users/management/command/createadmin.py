@@ -1,14 +1,14 @@
 from django.core.management.base import BaseCommand
-from users.models import User
+from users.models import CustomsUser
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
 
-        user = User.objects.create(
-            email="test@mail.ru",
+        user = CustomsUser.objects.create(
+            name='admin',
+            email="savitsky.alexandr@mail.ru",
         )
-
         user.set_password("1234")
 
         user.is_active = True

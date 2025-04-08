@@ -13,7 +13,7 @@ from django.views.generic import (
 )
 
 from mailing.forms import RecipientForm, MessageForm, MailingForm
-from mailing.models import Client, Message, Mailing, MailingAttempt
+from mailing.models import Recipient, Message, Mailing, MailingAttempt
 from mailing.services import (
     get_mailing_from_cache,
     get_message_from_cache,
@@ -37,13 +37,13 @@ class MailingHomeView(ListView):
             status="running",
         ).count()
         # Количество уникальных получателей
-        context["unique_recipients_count"] = Client.objects.distinct().count()
+        context["unique_recipients_count"] = Recipient.objects.distinct().count()
 
         return context
 
 
 class RecipientCreateView(LoginRequiredMixin, CreateView):
-    model = Client
+    model = Recipient
     form_class = RecipientForm
     template_name = "recipient_create.html"
     success_url = reverse_lazy("mailing:home")
@@ -55,25 +55,25 @@ class RecipientCreateView(LoginRequiredMixin, CreateView):
 
 
 class RecipientUpdateView(LoginRequiredMixin, UpdateView):
-    model = Client
+    model = Recipient
     form_class = RecipientForm
     template_name = "recipient_create.html"
     success_url = reverse_lazy("mailing:recipient_list")
 
     def get_queryset(self):
-        return Client.objects.filter(owner=self.request.user)
+        return Recipient.objects.filter(owner=self.request.user)
 
     def get_object(self, queryset=None):
         try:
             return super().get_object(queryset)
-        except Client.DoesNotExist:
+        except Recipient.DoesNotExist:
             raise PermissionDenied(
                 "У Вас нет прав для редактирования этого получателя."
             )
 
 
 class RecipientDeleteView(DeleteView):
-    model = Client
+    model = Recipient
     template_name = "recipient_delete.html"
     success_url = reverse_lazy("mailing:recipient_list")
 
@@ -88,7 +88,7 @@ class RecipientDeleteView(DeleteView):
 
 
 class RecipientListView(ListView):
-    model = Client
+    model = Recipient
     template_name = "recipient_list.html"
     context_object_name = "recipients"
 
@@ -97,14 +97,14 @@ class RecipientListView(ListView):
             "can_view_other_client"
 
         ):
-            return Client.objects.all()
+            return Recipient.objects.all()
         else:
             user = self.request.user
-            return Client.objects.filter(owner=user)
+            return Recipient.objects.filter(owner=user)
 
 
 class RecipientDetailView(DetailView):
-    model = Client
+    model = Recipient
     template_name = "recipient_detail.html"
     context_object_name = "recipient"
 

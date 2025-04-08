@@ -1,13 +1,12 @@
 from django import forms
-
-from mailing.models import Client, Message, Mailing
+from mailing.models import Recipient, Message, Mailing
 
 
 class RecipientForm(forms.ModelForm):
     """Класс формы клиента"""
 
     class Meta:
-        model = Client
+        model = Recipient
         fields = ["full_name", "email", "comment"]
 
 
@@ -34,5 +33,5 @@ class MailingForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Фильтруем получателей и сообщения по текущему пользователю
-        self.fields['recipient'].queryset = Client.objects.filter(owner=user)
+        self.fields['recipient'].queryset = Recipient.objects.filter(owner=user)
         self.fields['message'].queryset = Message.objects.filter(owner=user)
