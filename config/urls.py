@@ -8,8 +8,8 @@ from mailing.views import homeView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", homeView.as_view(), name="home"),
-    path("", include("mailing_service.urls", namespace="mailing")),
-    path("users/", include("auth_users.urls", namespace="users")),
+    path("", include("mailing.urls", namespace="mailing")),
+    path("users/", include("users.urls", namespace="users")),
 ]
 
 if settings.DEBUG:

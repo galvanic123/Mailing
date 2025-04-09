@@ -33,8 +33,8 @@ class ReceiveMail(models.Model):
 class Message(models.Model):
     """Модель «Сообщение»:"""
 
-    subject = models.CharField(max_length=255, verbose_name="Тема письма")
-    content = models.TextField(verbose_name="Содержимое письма")
+    subject = models.CharField(max_length=255, verbose_name="Тема письма", blank=True, null=True)
+    content = models.TextField(verbose_name="Содержимое письма", blank=True, null=True)
     owner = models.ForeignKey(
         CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
     )

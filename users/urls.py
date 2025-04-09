@@ -2,13 +2,13 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView
 from django.urls import path
 
-from users.apps import AuthUsersConfig
+from users.apps import UsersConfig
 from users.services import block_user
 from users.views import (PasswordRecoveryView, UserCreateView,
                               UserDeleteView, UserDetailView, UserListView,
                               UserUpdateView, email_verification, user_logout)
 
-app_name = AuthUsersConfig.name
+app_name = UsersConfig.name
 
 urlpatterns = [
     path(
