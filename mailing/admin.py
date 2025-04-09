@@ -1,54 +1,54 @@
 from django.contrib import admin
-from mailing.models import Mailing, MailingAttempt, Message, Recipient
+
+from mailing.models import (AttemptMailing, Mailing, Message,
+                                    ReceiveMail)
 
 
-@admin.register(Recipient)
-class RecipientAdmin(admin.ModelAdmin):
-    list_display = ("id", "email", "full_name", "comment")
-    list_filter = ("full_name",)
+@admin.register(ReceiveMail)
+class ReceiveMailAdmin(admin.ModelAdmin):
+    list_display = ("id", "fio", "mail", "comment", "owner")
+    list_filter = ("fio",)
     search_fields = (
-        "email",
-        "full_name",
+        "fio",
+        "mail",
     )
 
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ("id", "theme_message", "text")
-    list_filter = ("theme_message",)
-    search_fields = (
-        "theme_message",
-        "text",
+    list_display = (
+        "id",
+        "subject",
+        "content",
+        "owner",
     )
+    search_fields = ("subject",)
+    list_filter = ("subject",)
 
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "date_first_message",
-        "date_end_message",
+        "first_sending",
+        "end_sending",
         "status",
         "message",
+        "is_active",
+        "owner",
     )
+    search_fields = ("status",)
     list_filter = ("status",)
-    search_fields = (
-        "message",
-        "recipient",
-    )
 
 
-@admin.register(MailingAttempt)
+@admin.register(AttemptMailing)
 class MailingAttemptAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "date_time_attempt",
+        "owner",
+        "response",
+        "date_attempt",
         "status",
-        "mail_server_response",
-        "mailing",
     )
-    list_filter = (
-        "status",
-        "date_time_attempt",
-    )
-    search_fields = ("date_time_attempt",)
+    search_fields = ("owner",)
+    list_filter = ("owner",)

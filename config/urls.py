@@ -1,14 +1,15 @@
-from django.contrib import admin
-from django.urls import path, include
 from django.conf.urls.static import static
-from django.conf import settings
+from django.contrib import admin
+from django.urls import include, path
 
+from config import settings
+from mailing.views import homeView
 
 urlpatterns = [
-
     path("admin/", admin.site.urls),
-    path("mailing/", include("mailing.urls", namespace="mailing")),
-    path("users/", include("users.urls", namespace="users")),
+    path("", homeView.as_view(), name="home"),
+    path("", include("mailing_service.urls", namespace="mailing")),
+    path("users/", include("auth_users.urls", namespace="users")),
 ]
 
 if settings.DEBUG:

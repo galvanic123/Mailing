@@ -1,15 +1,15 @@
 from django.db import models
+
 from users.models import CustomsUser
 
 
-class Recipient(models.Model):
-    """Модель получателя рассылки"""
+class ReceiveMail(models.Model):
+    """Модель «Получатель рассылки»:"""
 
-    email = models.EmailField(unique=True, verbose_name="Email получателя")
-    full_name = models.CharField(verbose_name="ФИО получателя", unique=True)
-    comment = models.TextField(
-        max_length=150, null=True, blank=True, verbose_name="Комментарий"
-    )
+    mail = models.EmailField(max_length=255, verbose_name="email", unique=True)
+    fio = models.CharField(max_length=255, verbose_name="ФИО")
+    comment = models.TextField(verbose_name="Комментарии", null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name="активность")
     owner = models.ForeignKey(
         CustomsUser,
         verbose_name="Владелец",
@@ -19,123 +19,127 @@ class Recipient(models.Model):
     )
 
     def __str__(self):
-        return self.full_name
+        return f"{self.fio} {self.mail} "
 
     class Meta:
-        verbose_name = "Получатель"
-        verbose_name_plural = "Получатели"
-        ordering = ["full_name"]
-        permissions = [("can_view_other_client", "Может просматривать чужих клиентов")]    # noqa
+        verbose_name = "получатель"
+        verbose_name_plural = "получатели"
+        ordering = ["fio"]
+        permissions = [
+            ("can_blocking_client", "Может блокировать получателя"),
+        ]
 
 
 class Message(models.Model):
-    """Модель управление сообщениями"""
+    """Модель «Сообщение»:"""
 
-    theme_message = models.CharField(max_length=150, verbose_name="Тема письма")   # noqa
-    text = models.TextField(null=True, blank=True)
+    subject = models.CharField(max_length=255, verbose_name="Тема письма")
+    content = models.TextField(verbose_name="Содержимое письма")
     owner = models.ForeignKey(
-        CustomsUser,
-        verbose_name="Владелец",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
     )
 
     def __str__(self):
-        return self.theme_message
+        return self.content
 
     class Meta:
-        verbose_name = "Сообщение"
-        verbose_name_plural = "Сообщения"
-        ordering = ["theme_message"]
+        verbose_name = "письмо"
+        verbose_name_plural = "письма"
+        ordering = ["subject"]
         permissions = [
-            ("can_view_other_message", "Может просматривать чужие сообщения")
+            ("can_blocking_sms", "Может блокировать сообщение"),
         ]
 
 
 class Mailing(models.Model):
-    """Модель управление рассылками"""
+    """Модель «Рассылка»:"""
+
+    CREATED = "Создано"
+    LAUNCHED = "Запущено"
+    FINISHED = "Завершена"
 
     STATUS_CHOICES = [
-        ("created", "Создана"),
-        ("running", "Запущена"),
-        ("completed", "Завершена"),
-        ("blocked", "Заблокирована"),
-        ("unblocked", "Разблокирована"),
+        (CREATED, "Создано"),
+        (LAUNCHED, "Запущено"),
+        (FINISHED, "Завершена"),
     ]
 
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
-    recipient = models.ManyToManyField(Recipient, related_name="Получатели")
-    date_first_message = models.DateTimeField(
-        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"    # noqa
+    first_sending = models.DateTimeField(
+        verbose_name="Дата первой отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'
     )
-    date_end_message = models.DateTimeField(
-        null=True, blank=True, help_text="укажите время в формате 2023-10-01 12:00"    # noqa
+    end_sending = models.DateTimeField(
+        verbose_name="Дата окончания отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'
     )
+
     status = models.CharField(
-        max_length=20,
+        max_length=11,
         choices=STATUS_CHOICES,
+        default=CREATED,
+        verbose_name="Статус рассылки",
+    )
+    is_active = models.BooleanField(
+        default=True, verbose_name="активна", null=True, blank=True
+    )
+    message = models.ForeignKey(
+        Message,
+        on_delete=models.CASCADE,
+        verbose_name="Сообщение",
+        related_name="mailings",
+        null=True,
         blank=True,
-        default="created",
-        verbose_name="Статус",
+    )
+    client = models.ManyToManyField(
+        ReceiveMail,
+        verbose_name="Клиент",
     )
     owner = models.ForeignKey(
-        CustomsUser,
-        verbose_name="Владелец",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
     )
-    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Рассылка для сообщения: «{self.message}»"
+        return f"{self.id}"
 
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
-        ordering = ["date_first_message", "message"]
+        ordering = ["first_sending"]
         permissions = [
-            ("can_view_other_mailing", "Может просматривать чужие рассылки"),
-            ("can_mailing_blocked", "Может блокировать рассылки"),
+            ("set_is_active", "set is active"),
         ]
 
 
-class MailingAttempt(models.Model):
-    """Модель попытки рассылок"""
+class AttemptMailing(models.Model):
+    """Модель «Попытка рассылки»"""
+
+    STATUS_OK = "Успешно"
+    STATUS_NOK = "Не успешно"
 
     STATUS_CHOICES = [
-        ("successfully", "Успешно"),
-        ("not_successfully", "Не успешно"),
+        (STATUS_OK, "Успешно"),
+        (STATUS_NOK, "Не успешно"),
     ]
 
-    date_time_attempt = models.DateTimeField(
-        auto_now_add=True, verbose_name="Дата и время попытки"
-    )
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)
-    mail_server_response = models.TextField(verbose_name="Ответ почтового сервера")   # noqa
+    date_attempt = models.DateTimeField(verbose_name="Дата и время попытки")
     status = models.CharField(
-        max_length=16,
-        choices=STATUS_CHOICES,
-        blank=True,
-        default="not_successfully",
-        verbose_name="Статус",
+        max_length=15, choices=STATUS_CHOICES, verbose_name="Статус попытки"
+    )
+    response = models.TextField(
+        verbose_name="Ответ почтового сервера", null=True, blank=True
+    )
+    mailing = models.ForeignKey(
+        Mailing,
+        on_delete=models.CASCADE,
+        verbose_name="Рассылка",
+        related_name="mailing",
     )
     owner = models.ForeignKey(
-        CustomsUser,
-        verbose_name="Владелец",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
     )
 
-    def formatted_date_time(self):
-        return self.date_time_attempt.strftime("%Y-%m-%d %H:%M:%S")
-
     def __str__(self):
-        return f"Попытка {self.id} - Статус: {self.status} в {self.date_time_attempt}"   # noqa
+        return f'{self.date_attempt} "{self.status}" '
 
     class Meta:
-        verbose_name = "Попытка рассылки"
-        verbose_name_plural = "Попытки рассылки"
-        ordering = ["date_time_attempt"]
+        verbose_name = "попытка"
+        verbose_name_plural = "попытки"
+        ordering = ["date_attempt", "status"]

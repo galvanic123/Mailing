@@ -1,37 +1,59 @@
 from django import forms
-from mailing.models import Recipient, Message, Mailing
+from django.forms import BooleanField, ModelForm
+
+from .models import Mailing, Message, ReceiveMail
 
 
-class RecipientForm(forms.ModelForm):
-    """Класс формы клиента"""
-
-    class Meta:
-        model = Recipient
-        fields = ["full_name", "email", "comment"]
-
-
-class MessageForm(forms.ModelForm):
-    """Класс формы сообщения"""
-
-    class Meta:
-        model = Message
-        fields = ["theme_message", "text", "owner"]
-        widgets = {
-            "text": forms.Textarea(attrs={"placeholder": "Введите ваше сообщение..."}),   # noqa
-        }
+class StyleFormMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for fild_name, fild in self.fields.items():
+            if isinstance(fild, BooleanField):
+                fild.widget.attrs["class"] = "form-check-input"
+            else:
+                fild.widget.attrs["class"] = "form-control"
 
 
-class MailingForm(forms.ModelForm):
+class EmailForm(forms.Form):
+    subject = forms.CharField(max_length=255, label="Тема письма")
+    message = forms.CharField(widget=forms.Textarea, label="Сообщение")
+    recipients = forms.CharField(
+        widget=forms.Textarea, label="Получатели (через запятую)"
+    )
+
+
+class MailingForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Mailing
-        fields = ["date_first_message", "date_end_message", "message", "recipient", "status"]    # noqa
-        widgets = {
-            "date_first_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),   # noqa
-            "date_end_message": forms.DateTimeInput(attrs={"type": "datetime-local"}),     # noqa
-        }
+        fields = "__all__"
+        exclude = ("set_is_active", "owner")
 
-    def __init__(self, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Фильтруем получателей и сообщения по текущему пользователю
-        self.fields['recipient'].queryset = Recipient.objects.filter(owner=user)     # noqa
-        self.fields['message'].queryset = Message.objects.filter(owner=user)         # noqa
+
+class MessageForm(StyleFormMixin, ModelForm):
+
+    class Meta:
+
+        model = Message
+        fields = ("subject", "content")
+
+
+class ReceiveMailForm(StyleFormMixin, ModelForm):
+
+    class Meta:
+
+        model = ReceiveMail
+        fields = "__all__"
+        exclude = ("can_blocking_client", "owner")
+
+
+class ReceiveMailModeratorForm(StyleFormMixin, ModelForm):
+    class Meta:
+
+        model = ReceiveMail
+        fields = "__all__"
+
+
+class MailingModeratorForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = Mailing
+        fields = "__all__"

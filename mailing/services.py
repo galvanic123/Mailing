@@ -1,105 +1,93 @@
-from config.settings import CACHE_ENABLED
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from mailing.models import Mailing, Message, Recipient, MailingAttempt
-from django.core.mail import send_mail, BadHeaderError
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Q
-from config.settings import EMAIL_HOST_USER
+
+from config.settings import CACHE_ENABLED, EMAIL_HOST_USER
+from mailing.models import AttemptMailing, Mailing, Message
 
 
-def get_mailing_from_cache():
-    """Получает данные из кэша, если кэш пуст, получает данные из бд"""
-    if not CACHE_ENABLED:
-        return Mailing.objects.all()
-    key = "mailing_list"
-    mailings = cache.get(key)
-    if mailings is not None:
-        return mailings
-    mailings = Mailing.objects.all()
-    cache.set(key, mailings)
-    return mailings
+def run_mail(request, pk):
+    """Функция запуска рассылки по требованию"""
+    mailing = get_object_or_404(Mailing, id=pk)
+    for recipient in mailing.client.all():
+        try:
+            mailing.status = Mailing.LAUNCHED
+            send_mail(
+                subject=mailing.message.subject,
+                message=mailing.message.content,
+                from_email=EMAIL_HOST_USER,
+                recipient_list=[recipient.mail],
+                fail_silently=False,
+            )
+            AttemptMailing.objects.create(
+                date_attempt=timezone.now(),
+                status=AttemptMailing.STATUS_OK,
+                response="Email отправлен",
+                mailing=mailing,
+            )
+        except Exception as e:
+            print(f"Ошибка при отправке письма для {recipient.mail}: {str(e)}")
+            AttemptMailing.objects.create(
+                date_attempt=timezone.now(),
+                status=AttemptMailing.STATUS_NOK,
+                response=str(e),
+                mailing=mailing,
+            )
+    if mailing.end_sending and mailing.end_sending <= timezone.now():
+        # Если время рассылки закончилось, обновляем статус на "завершено"
+        mailing.status = Mailing.FINISHED
+    mailing.save()
+    return redirect("mailing:mailing_list")
 
 
 def get_message_from_cache():
-    """Получает данные из кэша, если кэш пуст, получает данные из бд"""
+    """Получение данных по сообщениям из кэша, если кэш пуст берем из БД."""
+
     if not CACHE_ENABLED:
         return Message.objects.all()
     key = "message_list"
-    messages = cache.get(key)
-    if messages is not None:
-        return messages
-    messages = Message.objects.all()
-    cache.set(key, messages)
-    return messages
+    cache_message = cache.get(key)
+    if cache_message is not None:
+        return cache_message
+    cache_message = Message.objects.all()
+    cache.set(cache_message, key)
+    return cache_message
 
 
-def get_recipient_from_cache():
-    """Получает данные из кэша, если кэш пуст, получает данные из бд"""
+def get_mailing_from_cache():
+    """Получение данных по рассылкам из кэша, если кэш пуст берем из БД."""
+
     if not CACHE_ENABLED:
-        return Recipient.objects.all()
-    key = "recipient_list"
-    recipients = cache.get(key)
-    if recipients is not None:
-        return recipients
-    recipients = Recipient.objects.all()
-    cache.set(key, recipients)
-    return recipients
+        return Mailing.objects.all()
+    key = "mailing_list"
+    cache_mail = cache.get(key)
+    if cache_mail is not None:
+        return cache_mail
+    cache_mail = Mailing.objects.all()
+    cache.set(cache_mail, key)
+    return cache_mail
 
 
-def send_mailing(mailing: Mailing = None):
-    if not mailing:
-        # Фильтруем рассылки по статусу и текущему времени
-        mailings_to_send = Mailing.objects.filter(
-            Q(status="created") | Q(status="completed") | Q(status="unblocked"),   # noqa
-            date_first_message__lte=timezone.now(),
-        )
-    else:
-        mailings_to_send = [mailing]
+def get_attempt_from_cache():
+    """Получение данных по попыткам  из кэша, если кэш пуст берем из БД."""
 
-    for mailing in mailings_to_send:
-        # Меняем статус на "Запущена" перед началом отправки
-        mailing.status = "running"
-        mailing.start_datetime = timezone.now()
-        mailing.save()
+    if not CACHE_ENABLED:
+        return AttemptMailing.objects.all()
+    key = "attempt_list"
+    cache_attempt = cache.get(key)
+    if cache_attempt is not None:
+        return cache_attempt
+    cache_mail = Mailing.objects.all()
+    cache.set(cache_mail, key)
+    return cache_mail
 
-        success_count = 0
 
-        for recipient in mailing.recipient.all():
-            try:
-                send_mail(
-                    subject=mailing.message.theme_message,
-                    message=mailing.message.text,
-                    from_email=EMAIL_HOST_USER,
-                    recipient_list=[recipient.email],
-                )
-
-                MailingAttempt.objects.create(
-                    mailing=mailing,
-                    status="successfully",
-                    mail_server_response="Письмо отправлено успешно.",
-                    date_time_attempt=timezone.now(),
-                )
-
-                success_count += 1
-
-            except BadHeaderError as e:
-                MailingAttempt.objects.create(
-                    mailing=mailing,
-                    status="not_successfully",
-                    mail_server_response=str(e),
-                    date_time_attempt=timezone.now(),
-                )
-
-            except Exception as e:
-                MailingAttempt.objects.create(
-                    mailing=mailing,
-                    status="not_successfully",
-                    mail_server_response=str(e),
-                    date_time_attempt=timezone.now(),
-                )
-
-        # Если все письма были отправлены успешно, меняем статус на "Завершена"
-        if success_count == len(mailing.recipient.all()):
-            mailing.status = "completed"
-            mailing.end_datetime = timezone.now()
-        mailing.save()
+@login_required
+def block_mailing(request, pk):
+    mailing = Mailing.objects.get(pk=pk)
+    mailing.is_active = {mailing.is_active: False, not mailing.is_active: True}[True]
+    mailing.save()
+    return redirect(reverse("mailing:mailing_list"))

@@ -3,16 +3,34 @@ from django.db import models
 
 
 class CustomsUser(AbstractUser):
-    username = models.CharField('имя пользователя', max_length=150, blank=True, null=True)     # noqa
-    email = models.EmailField(unique=True, verbose_name="Email")      # noqa
-    avatar = models.ImageField(upload_to="photo/avatar", blank=True, null=True, verbose_name="Аватар",    # noqa
-                               help_text="Загрузите аватар")
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True)
-    token = models.CharField(
-        max_length=100, verbose_name="Токен", blank=True, null=True
+
+    username = None
+    email = models.EmailField(unique=True, verbose_name="Email")
+    phone = models.CharField(
+        max_length=35,
+        verbose_name="телефон",
+        blank=True,
+        null=True,
+        help_text="введи номер телефона",
     )
-    is_blocked = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=50, verbose_name="Имя")
+    last_name = models.CharField(max_length=50, verbose_name="Фамилия")
+    middle_name = models.CharField(
+        max_length=50, verbose_name="Отчество", blank=True, null=True
+    )
+    avatar = models.ImageField(
+        upload_to="photo/avatars/", blank=True, null=True, verbose_name="Аватар"
+    )
+    country = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Страна",
+        help_text="Укажите страну",
+    )
+    token = models.CharField(
+        max_length=100, verbose_name="Token", blank=True, null=True
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -21,7 +39,7 @@ class CustomsUser(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         permissions = [
-            ("can_block_user", "Может блокировать пользователя"),
+            ("can_block_user", "Блокировка пользователя"),
         ]
 
     def __str__(self):

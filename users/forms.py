@@ -1,59 +1,61 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from .models import CustomsUser
+from django.contrib.auth.forms import (PasswordResetForm, SetPasswordForm,
+                                       UserCreationForm)
+from django.forms import ModelForm
+from django.urls import reverse_lazy
+
+from users.models import CustomsUser
+from mailing.forms import StyleFormMixin
 
 
-class CustomUserCreationForm(UserCreationForm):
+class UserRegisterForm(StyleFormMixin, UserCreationForm):
+    class Meta:
+        model = CustomsUser
+        fields = ("email", "password1", "password2")
 
-    phone_number = forms.CharField(
-        max_length=15,
-        required=False,
-        help_text="Необязательное поле. Введите номер телефона",
-    )
+
+class UserUpdateForm(StyleFormMixin, ModelForm):
 
     class Meta:
         model = CustomsUser
-        fields = (
-            "email",
-            "first_name",
-            "last_name",
-            "avatar",
-            "phone_number",
-            "password1",
-            "password2",
-        )
+        fields = "__all__"
+        exclude = ("token",)
 
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
-        if phone_number and not phone_number.isdigit():
-            raise forms.ValidationError("номер телефона должен состоять только из цифр")  # noqa
-        return phone_number
+        success_url = reverse_lazy("users:users")
 
-    def clean_avatar(self):
-        cleaned_data = super().clean()
-        avatar = cleaned_data.get("image")
 
-        if avatar is None:
-            return None
+class UserForgotPasswordForm(PasswordResetForm):
+    """Форма запроса на восстановление пароля"""
 
-        if avatar.size > 5 * 1024 * 1024:
-            raise forms.ValidationError("Размер файла не должен превышать 5MB.")   # noqa
-
-        if not avatar.name.endswith(("jpg", "jpeg", "png")):
-            raise forms.ValidationError(
-                "Формат файла не соответствует требованиям. " "Формат файла должен быть *.jpg, *.jpeg, *.png"    # noqa
+    def __init__(self, *args, **kwargs):
+        """Обновление стилей формы"""
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update(
+                {"class": "form-control", "autocomplete": "off"}
             )
 
-        return avatar
+
+class UserSetNewPasswordForm(SetPasswordForm):
+    """Форма изменения пароля пользователя после подтверждения"""
+
+    def __init__(self, *args, **kwargs):
+        """Обновление стилей формы"""
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update(
+                {"class": "form-control", "autocomplete": "off"}
+            )
 
 
-class CustomUserUpdateForm(UserCreationForm):
+class PasswordRecoveryForm(StyleFormMixin, forms.Form):
+    email = forms.EmailField(label="Укажите Email")
 
-    class Meta:
-        model = CustomsUser
-        fields = (
-            "first_name",
-            "last_name",
-            "avatar",
-            "phone_number",
-        )
+    def clean_email(self):
+        """
+        Проверка email на уникальность
+        """
+        email = self.cleaned_data.get("email")
+        if not CustomsUser.objects.filter(email=email).exists():
+            raise forms.ValidationError("Такого email нет в системе")
+        return email

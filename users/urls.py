@@ -1,22 +1,31 @@
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LoginView
 from django.urls import path
-from django.contrib.auth.views import LoginView, LogoutView
-from users.views import (RegisterView,
-                         email_verification,
-                         UserListView,
-                         BlockUserView,
-                         UserUpdateView,
-                         UserDetailView)
 
-app_name = "users"
+from users.apps import AuthUsersConfig
+from users.services import block_user
+from users.views import (PasswordRecoveryView, UserCreateView,
+                              UserDeleteView, UserDetailView, UserListView,
+                              UserUpdateView, email_verification, user_logout)
 
+app_name = AuthUsersConfig.name
 
 urlpatterns = [
-    path("register/", RegisterView.as_view(), name="register"),   # noqa
-    path("login/", LoginView.as_view(template_name="login.html"), name="login"),  # noqa
-    path("logout/", LogoutView.as_view(next_page="mailing:home"), name="logout"),  # noqa
-    path("email-confirm/<str:token>/", email_verification, name="email-confirm"),    # noqa
-    path("user_list/", UserListView.as_view(), name="user_list"),     # noqa
-    path("user_block/<int:user_id>", BlockUserView.as_view(), name="user_block"),   # noqa
-    path("user_update/<int:pk>", UserUpdateView.as_view(), name="user_update"),     # noqa
-    path("user_profile/<int:pk>", UserDetailView.as_view(), name="user_profile"),    # noqa
+    path(
+        "login/", LoginView.as_view(template_name="auth_users/login.html"), name="login"
+    ),
+    path("logout/", user_logout, name="logout"),
+    path(
+        "password_reset/", auth_views.PasswordResetView.as_view(), name="reset_password"
+    ),
+    path("email-confirm/<str:token>/", email_verification, name="email-confirm"),
+    path("register/", UserCreateView.as_view(), name="register"),
+    path("users/", UserListView.as_view(), name="user_list"),
+    path("detail/<int:pk>/", UserDetailView.as_view(), name="user_detail"),
+    path("update/<int:pk>/", UserUpdateView.as_view(), name="user_update"),
+    path("delete/<int:pk>/", UserDeleteView.as_view(), name="user_delete"),
+    path(
+        "password-recovery/", PasswordRecoveryView.as_view(), name="password_recovery"
+    ),
+    path("block_user/<int:pk>", block_user, name="block_user"),
 ]
