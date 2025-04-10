@@ -1,4 +1,4 @@
-{% extends 'mailing/mailing/base.html' %}
+{% extends 'mailing/base.html' %}
 {% block content %}
 {% load my_tags %}
 <div class="container marketing mt-5">
@@ -8,7 +8,7 @@
             <div class="col-4">
                 <h2>Рассылки</h2>
                 {% if user.is_authenticated and not user.is_staff or user.is_superuser %}
-                    <a class="btn btn-success mt-3" href="{% url 'mailing:mailing_create' %}">Создать рассылку &raquo;</a></p>
+                    <a class="btn btn-success mt-3" href="{% url 'mailing:mailing_create' %}">Создать рассылку</a></p>
                 {% endif %}
             </div>
             <div class="col-4"></div>
@@ -57,7 +57,7 @@
                         {% if user.is_superuser or object.owner == user %}
                         <a class="btn btn-primary btn-sm" href="{% url 'mailing:mailing_update' object.pk%}">Редактировать</a>
                         <a class="btn btn-danger btn-sm" href="{% url 'mailing:mailing_delete' object.pk%}">Удалить</a>
-                        <a class="btn btn-secondary btn-sm" href="{% url 'mailing:run_mail' object.pk%}">Запустить &raquo;</a>
+                        <a class="btn btn-secondary btn-sm" href="{% url 'mailing:run_mail' object.pk%}">Запустить</a>
                         {% endif %}
                     {% endif %}
                     </td>

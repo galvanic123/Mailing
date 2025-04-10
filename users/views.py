@@ -12,7 +12,6 @@ from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, UpdateView)
-
 from users.forms import (PasswordRecoveryForm, UserForgotPasswordForm,
                               UserRegisterForm, UserSetNewPasswordForm,
                               UserUpdateForm)
@@ -22,13 +21,14 @@ from config.settings import EMAIL_HOST_USER
 
 def user_logout(request):
     logout(request)
-    return render(request, template_name="mailing_service/mailing/home.html")
+    return render(request, template_name="mailing/home.html")
 
 
 class UserCreateView(CreateView):
     model = CustomsUser
     form_class = UserRegisterForm
-    success_url = reverse_lazy("users:login")
+    template_name = "users/user_form.html"
+    success_url = reverse_lazy("home.html")
 
     def form_valid(self, form):
         user = form.save()
@@ -39,8 +39,8 @@ class UserCreateView(CreateView):
         host = self.request.get_host()
         url = f"http://{host}/users/email-confirm/{token}/"
         send_mail(
-            subject="Потверждение почты",
-            message=f"Рады вашей регистрации!Осталось потвердить почту!{url}",
+            subject="Подтверждение почты",
+            message=f"Рады вашей регистрации!Осталось подтвердить почту!{url}",
             from_email=EMAIL_HOST_USER,
             recipient_list=[user.email],
         )
@@ -57,18 +57,22 @@ def email_verification(request, token):
 
 class UserListView(ListView):
     model = CustomsUser
-    template_name = "auth_users/user_lists.html"
-    context_object_name = "users_list"
+    template_name = "users/user_lists.html"
+    context_object_name = "user_list"
 
 
 class UserDetailView(DetailView):
     model = CustomsUser
     form_class = UserUpdateForm
+    template_name = "users/user_detail.html"
+    success_url = reverse_lazy("home.html")
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomsUser
     form_class = UserUpdateForm
+    template_name = "users/user_form.html"
+    context_object_name = "user_form"
 
     def get_success_url(self):
         if self.request.user.is_superuser:
@@ -86,13 +90,14 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 class UserDeleteView(DeleteView):
     model = CustomsUser
     form_class = UserUpdateForm
-
+    template_name = "users/user_confirm_delete.html"
+    reverse_lazy("mailing:home")
 
 class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
     """Представление установки нового пароля"""
 
     form_class = UserSetNewPasswordForm
-    template_name = "auth_users/password_set_new.html"
+    template_name = "users/password_set_new.html"
     success_url = reverse_lazy("users:login")
     success_message = "Пароль успешно изменен. Можете авторизоваться на сайте."
 
@@ -106,7 +111,7 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
     """Представление по сбросу пароля по почте"""
 
     form_class = UserForgotPasswordForm
-    template_name = "auth_users/password_reset.html"
+    template_name = "users/password_reset.html"
     success_url = reverse_lazy("users:login")
     success_message = (
         "Письмо с инструкцией по восстановлению пароля отправлено на ваш email"
@@ -121,7 +126,7 @@ class UserForgotPasswordView(SuccessMessageMixin, PasswordResetView):
 
 
 class PasswordRecoveryView(FormView):
-    template_name = "auth_users/password_recovery.html"
+    template_name = "users/password_recovery.html"
     form_class = PasswordRecoveryForm
     success_url = reverse_lazy("users:login")
 

@@ -1,4 +1,4 @@
-{% extends 'mailing/mailing/base.html' %}
+{% extends 'mailing/base.html' %}
 {% load my_tags %}
 {% block content %}
 <div class="row">
@@ -7,7 +7,7 @@
             {% if user.is_authenticated %}
             <h2 class="row justify-content-center">Привет {{user.email}}</h2>
             {% else %}
-            <h2 class="row justify-content-center">Привет, войди или зарегистируйся чтобы пользоваться сервисом рассылок.</h2>
+            <h2 class="row justify-content-center">Привет, войди или зарегистрируйся, чтобы пользоваться сервисом рассылок.</h2>
             {% endif %}
         </div>
     </div>

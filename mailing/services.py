@@ -4,7 +4,6 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-
 from config.settings import CACHE_ENABLED, EMAIL_HOST_USER
 from mailing.models import AttemptMailing, Mailing, Message
 

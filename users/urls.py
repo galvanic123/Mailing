@@ -12,7 +12,7 @@ app_name = UsersConfig.name
 
 urlpatterns = [
     path(
-        "login/", LoginView.as_view(template_name="auth_users/login.html"), name="login"
+        "login/", LoginView.as_view(template_name="users/login.html"), name="login"
     ),
     path("logout/", user_logout, name="logout"),
     path(

@@ -1,6 +1,5 @@
 from django import forms
 from django.forms import BooleanField, ModelForm
-
 from .models import Mailing, Message, ReceiveMail
 
 

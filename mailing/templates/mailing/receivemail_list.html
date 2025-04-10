@@ -1,4 +1,4 @@
-{% extends 'mailing/mailing/base.html' %}
+{% extends 'mailing/base.html' %}
 {% block content %}
 {% load my_tags %}
 <div class="container marketing mt-5">
@@ -9,8 +9,8 @@
             </div>
             <div class="col-4">
                 <h2>Получатели</h2>
-                {% if user.is_authenticated and not user.is_staff %}
-                <a class="btn btn-success mt-3" href="{% url 'mailing:receivemail_form' %}">Добавить получателя&raquo;</a>
+                {% if user.is_authenticated and user.is_staff %}
+                <a class="btn btn-success mt-3" href="{% url 'mailing:receivemail_form' %}">Добавить получателя</a>
                 {% endif %}
             </div>
             <div class="col-4">
