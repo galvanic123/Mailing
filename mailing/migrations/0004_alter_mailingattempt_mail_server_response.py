@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='mailingattempt',
             name='mail_server_response',
-            field=models.TextField(blank=True, null=True, verbose_name='Ответ почтового сервера'),
+            field=models.TextField(blank=True, null=True, verbose_name='Ответ почтового сервера'),    # noqa
         ),
     ]

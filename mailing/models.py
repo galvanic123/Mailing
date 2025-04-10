@@ -5,10 +5,10 @@ from users.models import CustomsUser
 class ReceiveMail(models.Model):
     """Модель «Получатель рассылки»:"""
 
-    mail = models.EmailField(max_length=255, verbose_name="email", unique=True)
-    fio = models.CharField(max_length=255, verbose_name="ФИО")
-    comment = models.TextField(verbose_name="Комментарии", null=True, blank=True)
-    is_active = models.BooleanField(default=True, verbose_name="активность")
+    mail = models.EmailField(max_length=255, verbose_name="email", unique=True)     # noqa
+    fio = models.CharField(max_length=255, verbose_name="ФИО")               # noqa
+    comment = models.TextField(verbose_name="Комментарии", null=True, blank=True)     # noqa
+    is_active = models.BooleanField(default=True, verbose_name="активность")       # noqa
     owner = models.ForeignKey(
         CustomsUser,
         verbose_name="Владелец",
@@ -25,17 +25,17 @@ class ReceiveMail(models.Model):
         verbose_name_plural = "получатели"
         ordering = ["fio"]
         permissions = [
-            ("can_blocking_client", "Может блокировать получателя"),
+            ("can_blocking_client", "Может блокировать получателя"),     # noqa
         ]
 
 
 class Message(models.Model):
     """Модель «Сообщение»:"""
 
-    subject = models.CharField(max_length=255, verbose_name="Тема письма", blank=True, null=True)
-    content = models.TextField(verbose_name="Содержимое письма", blank=True, null=True)
+    subject = models.CharField(max_length=255, verbose_name="Тема письма", blank=True, null=True)     # noqa
+    content = models.TextField(verbose_name="Содержимое письма", blank=True, null=True)        # noqa
     owner = models.ForeignKey(
-        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"     # noqa
     )
 
     def __str__(self):
@@ -64,10 +64,10 @@ class Mailing(models.Model):
     ]
 
     first_sending = models.DateTimeField(
-        verbose_name="Дата первой отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'
+        verbose_name="Дата первой отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'     # noqa
     )
     end_sending = models.DateTimeField(
-        verbose_name="Дата окончания отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'
+        verbose_name="Дата окончания отправки", null=True, blank=True, help_text='гггг-мм-дд чч:мм:сс'    # noqa
     )
 
     status = models.CharField(
@@ -92,7 +92,7 @@ class Mailing(models.Model):
         verbose_name="Клиент",
     )
     owner = models.ForeignKey(
-        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"    # noqa
     )
 
     def __str__(self):
@@ -132,7 +132,7 @@ class AttemptMailing(models.Model):
         related_name="mailing",
     )
     owner = models.ForeignKey(
-        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"
+        CustomsUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Владелец"     # noqa
     )
 
     def __str__(self):

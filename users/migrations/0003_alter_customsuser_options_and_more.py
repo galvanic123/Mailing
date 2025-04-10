@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='customsuser',
-            options={'permissions': [('can_block_user', 'Блокировка пользователя')], 'verbose_name': 'Пользователь', 'verbose_name_plural': 'Пользователи'},
+            options={'permissions': [('can_block_user', 'Блокировка пользователя')], 'verbose_name': 'Пользователь', 'verbose_name_plural': 'Пользователи'},  # noqa
         ),
         migrations.RemoveField(
             model_name='customsuser',
@@ -29,36 +29,36 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customsuser',
             name='middle_name',
-            field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Отчество'),
+            field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Отчество'),   # noqa
         ),
         migrations.AddField(
             model_name='customsuser',
             name='phone',
-            field=models.CharField(blank=True, help_text='введи номер телефона', max_length=35, null=True, verbose_name='телефон'),
+            field=models.CharField(blank=True, help_text='введи номер телефона', max_length=35, null=True, verbose_name='телефон'),   # noqa
         ),
         migrations.AlterField(
             model_name='customsuser',
             name='avatar',
-            field=models.ImageField(blank=True, null=True, upload_to='photo/avatars/', verbose_name='Аватар'),
+            field=models.ImageField(blank=True, null=True, upload_to='photo/avatars/', verbose_name='Аватар'),    # noqa
         ),
         migrations.AlterField(
             model_name='customsuser',
             name='country',
-            field=models.CharField(blank=True, help_text='Укажите страну', max_length=50, null=True, verbose_name='Страна'),
+            field=models.CharField(blank=True, help_text='Укажите страну', max_length=50, null=True, verbose_name='Страна'),    # noqa
         ),
         migrations.AlterField(
             model_name='customsuser',
             name='first_name',
-            field=models.CharField(max_length=50, verbose_name='Имя'),
+            field=models.CharField(max_length=50, verbose_name='Имя'),   # noqa
         ),
         migrations.AlterField(
             model_name='customsuser',
             name='last_name',
-            field=models.CharField(max_length=50, verbose_name='Фамилия'),
+            field=models.CharField(max_length=50, verbose_name='Фамилия'),    # noqa
         ),
         migrations.AlterField(
             model_name='customsuser',
             name='token',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Token'),
+            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Token'),    # noqa
         ),
     ]

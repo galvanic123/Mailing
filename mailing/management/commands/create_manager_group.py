@@ -18,6 +18,6 @@ class Command(BaseCommand):
         user.save()
         self.stdout.write(
             self.style.SUCCESS(
-                f'Пользователь добавлен в группу "Менеджеры"\nemail для входа: {email}\nпароль: {password}'
+                f'Пользователь добавлен в группу "Менеджеры"\nemail для входа: {email}\nпароль: {password}'    # noqa
             )
         )

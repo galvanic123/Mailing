@@ -87,6 +87,6 @@ def get_attempt_from_cache():
 @login_required
 def block_mailing(request, pk):
     mailing = Mailing.objects.get(pk=pk)
-    mailing.is_active = {mailing.is_active: False, not mailing.is_active: True}[True]
+    mailing.is_active = {mailing.is_active: False, not mailing.is_active: True}[True]     # noqa
     mailing.save()
     return redirect(reverse("mailing:mailing_list"))

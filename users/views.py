@@ -12,9 +12,11 @@ from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic import (CreateView, DeleteView, DetailView, FormView,
                                   ListView, UpdateView)
-from users.forms import (PasswordRecoveryForm, UserForgotPasswordForm,
-                              UserRegisterForm, UserSetNewPasswordForm,
-                              UserUpdateForm)
+from users.forms import (
+    PasswordRecoveryForm, UserForgotPasswordForm,
+    UserRegisterForm, UserSetNewPasswordForm,
+    UserUpdateForm
+)
 from users.models import CustomsUser
 from config.settings import EMAIL_HOST_USER
 
@@ -93,7 +95,8 @@ class UserDeleteView(DeleteView):
     template_name = "users/user_confirm_delete.html"
     reverse_lazy("mailing:home")
 
-class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):
+
+class UserPasswordResetConfirmView(SuccessMessageMixin, PasswordResetConfirmView):    # noqa
     """Представление установки нового пароля"""
 
     form_class = UserSetNewPasswordForm
@@ -134,7 +137,7 @@ class PasswordRecoveryView(FormView):
         email = form.cleaned_data["email"]
         user = CustomsUser.objects.get(email=email)
         length = 12
-        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"    # noqa
         password = get_random_string(length, alphabet)
         user.set_password(password)
         user.save()

@@ -5,8 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from mailing.models import (AttemptMailing, Mailing, Message,
-                                    ReceiveMail)
+from mailing.models import (AttemptMailing, Mailing, Message, ReceiveMail)
 from .forms import (MailingForm, MailingModeratorForm, MessageForm,
                     ReceiveMailForm, ReceiveMailModeratorForm)
 
@@ -23,7 +22,7 @@ class homeView(TemplateView):
         context_data = super().get_context_data(**kwargs)
         context_data["title"] = "Главная"
         context_data["count_mailing"] = len(Mailing.objects.all())
-        active_mailings_count = Mailing.objects.filter(status="Создано").count()
+        active_mailings_count = Mailing.objects.filter(status="Создано").count()      # noqa
         context_data["active_mailings_count"] = active_mailings_count
         unique_clients_count = ReceiveMail.objects.distinct().count()
         context_data["unique_clients_count"] = unique_clients_count
@@ -38,7 +37,7 @@ class Contacts(TemplateView):
         if request.method == "POST":
             name = request.POST.get("name")
             message = request.POST.get("message")
-            return HttpResponse(f"Спасибо, {name}! {message} Сообщение получено.")
+            return HttpResponse(f"Спасибо, {name}! {message} Сообщение получено.")     # noqa
         return render(request, "mailing/contacts.html")
 
 
@@ -53,7 +52,7 @@ class MailingListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         if (
-            self.request.user.is_superuser or self.request.user.groups.filter(name="Менеджеры").exists()
+            self.request.user.is_superuser or self.request.user.groups.filter(name="Менеджеры").exists()     # noqa
         ):
             return super().get_queryset()
         elif self.request.user.groups.filter(name="Пользователи").exists():
@@ -81,9 +80,9 @@ class MailingDetailView(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.request.user.groups.filter(name="Менеджеры") or self.request.user.is_superuser:
+        if self.request.user.groups.filter(name="Менеджеры") or self.request.user.is_superuser:   # noqa
             return self.object
-        if self.object.owner != self.request.user and not self.request.user.is_superuser:
+        if self.object.owner != self.request.user and not self.request.user.is_superuser:   # noqa
             raise PermissionDenied
         return self.object
 
@@ -121,7 +120,7 @@ class ReceiveMailDetailView(LoginRequiredMixin, DetailView):
         self.object = super().get_object(queryset)
         if self.request.user.is_superuser:
             return self.object
-        if (self.object.owner != self.request.user and not self.request.user.is_superuser):
+        if (self.object.owner != self.request.user and not self.request.user.is_superuser):    # noqa
             raise PermissionDenied
         return self.object
 

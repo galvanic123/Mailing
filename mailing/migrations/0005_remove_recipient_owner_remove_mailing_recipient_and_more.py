@@ -23,11 +23,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='mailing',
-            options={'ordering': ['first_sending'], 'permissions': [('set_is_active', 'set is active')], 'verbose_name': 'Рассылка', 'verbose_name_plural': 'Рассылки'},
+            options={'ordering': ['first_sending'], 'permissions': [('set_is_active', 'set is active')], 'verbose_name': 'Рассылка', 'verbose_name_plural': 'Рассылки'},     # noqa
         ),
         migrations.AlterModelOptions(
             name='message',
-            options={'ordering': ['subject'], 'permissions': [('can_blocking_sms', 'Может блокировать сообщение')], 'verbose_name': 'письмо', 'verbose_name_plural': 'письма'},
+            options={'ordering': ['subject'], 'permissions': [('can_blocking_sms', 'Может блокировать сообщение')], 'verbose_name': 'письмо', 'verbose_name_plural': 'письма'},     # noqa
         ),
         migrations.RemoveField(
             model_name='mailing',
@@ -52,47 +52,47 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mailing',
             name='end_sending',
-            field=models.DateTimeField(blank=True, help_text='гггг-мм-дд чч:мм:сс', null=True, verbose_name='Дата окончания отправки'),
+            field=models.DateTimeField(blank=True, help_text='гггг-мм-дд чч:мм:сс', null=True, verbose_name='Дата окончания отправки'),     # noqa
         ),
         migrations.AddField(
             model_name='mailing',
             name='first_sending',
-            field=models.DateTimeField(blank=True, help_text='гггг-мм-дд чч:мм:сс', null=True, verbose_name='Дата первой отправки'),
+            field=models.DateTimeField(blank=True, help_text='гггг-мм-дд чч:мм:сс', null=True, verbose_name='Дата первой отправки'),     # noqa
         ),
         migrations.AddField(
             model_name='mailing',
             name='is_active',
-            field=models.BooleanField(blank=True, default=True, null=True, verbose_name='активна'),
+            field=models.BooleanField(blank=True, default=True, null=True, verbose_name='активна'),    # noqa
         ),
         migrations.AddField(
             model_name='message',
             name='content',
-            field=models.TextField(blank=True, null=True, verbose_name='Содержимое письма'),
+            field=models.TextField(blank=True, null=True, verbose_name='Содержимое письма'),     # noqa
         ),
         migrations.AddField(
             model_name='message',
             name='subject',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Тема письма'),
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Тема письма'),     # noqa
         ),
         migrations.AlterField(
             model_name='mailing',
             name='message',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='mailings', to='mailing.message', verbose_name='Сообщение'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='mailings', to='mailing.message', verbose_name='Сообщение'),    # noqa
         ),
         migrations.AlterField(
             model_name='mailing',
             name='status',
-            field=models.CharField(choices=[('Создано', 'Создано'), ('Запущено', 'Запущено'), ('Завершена', 'Завершена')], default='Создано', max_length=11, verbose_name='Статус рассылки'),
+            field=models.CharField(choices=[('Создано', 'Создано'), ('Запущено', 'Запущено'), ('Завершена', 'Завершена')], default='Создано', max_length=11, verbose_name='Статус рассылки'),     # noqa
         ),
         migrations.CreateModel(
             name='AttemptMailing',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_attempt', models.DateTimeField(verbose_name='Дата и время попытки')),
-                ('status', models.CharField(choices=[('Успешно', 'Успешно'), ('Не успешно', 'Не успешно')], max_length=15, verbose_name='Статус попытки')),
-                ('response', models.TextField(blank=True, null=True, verbose_name='Ответ почтового сервера')),
-                ('mailing', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mailing', to='mailing.mailing', verbose_name='Рассылка')),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Владелец')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),     # noqa
+                ('date_attempt', models.DateTimeField(verbose_name='Дата и время попытки')),       # noqa
+                ('status', models.CharField(choices=[('Успешно', 'Успешно'), ('Не успешно', 'Не успешно')], max_length=15, verbose_name='Статус попытки')),     # noqa
+                ('response', models.TextField(blank=True, null=True, verbose_name='Ответ почтового сервера')),       # noqa
+                ('mailing', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mailing', to='mailing.mailing', verbose_name='Рассылка')),      # noqa
+                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Владелец')),    # noqa
             ],
             options={
                 'verbose_name': 'попытка',
@@ -103,24 +103,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ReceiveMail',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mail', models.EmailField(max_length=255, unique=True, verbose_name='email')),
-                ('fio', models.CharField(max_length=255, verbose_name='ФИО')),
-                ('comment', models.TextField(blank=True, null=True, verbose_name='Комментарии')),
-                ('is_active', models.BooleanField(default=True, verbose_name='активность')),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Владелец')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),     # noqa
+                ('mail', models.EmailField(max_length=255, unique=True, verbose_name='email')),      # noqa
+                ('fio', models.CharField(max_length=255, verbose_name='ФИО')),        # noqa
+                ('comment', models.TextField(blank=True, null=True, verbose_name='Комментарии')),     # noqa
+                ('is_active', models.BooleanField(default=True, verbose_name='активность')),     # noqa
+                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Владелец')),      # noqa
             ],
             options={
                 'verbose_name': 'получатель',
                 'verbose_name_plural': 'получатели',
                 'ordering': ['fio'],
-                'permissions': [('can_blocking_client', 'Может блокировать получателя')],
+                'permissions': [('can_blocking_client', 'Может блокировать получателя')],     # noqa
             },
         ),
         migrations.AddField(
             model_name='mailing',
             name='client',
-            field=models.ManyToManyField(to='mailing.receivemail', verbose_name='Клиент'),
+            field=models.ManyToManyField(to='mailing.receivemail', verbose_name='Клиент'),     # noqa
         ),
         migrations.DeleteModel(
             name='MailingAttempt',

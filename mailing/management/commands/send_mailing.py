@@ -31,7 +31,7 @@ class Command(BaseCommand):
                         mailing=mailing,
                     )
                 except Exception as e:
-                    print(f"Ошибка при отправке письма для {recipient.mail}: {str(e)}")
+                    print(f"Ошибка при отправке письма для {recipient.mail}: {str(e)}")   # noqa
                     AttemptMailing.objects.create(
                         date_attempt=timezone.now(),
                         status=AttemptMailing.STATUS_NOK,

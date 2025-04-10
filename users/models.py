@@ -19,7 +19,7 @@ class CustomsUser(AbstractUser):
         max_length=50, verbose_name="Отчество", blank=True, null=True
     )
     avatar = models.ImageField(
-        upload_to="photo/avatars/", blank=True, null=True, verbose_name="Аватар"
+        upload_to="photo/avatars/", blank=True, null=True, verbose_name="Аватар"    # noqa
     )
     country = models.CharField(
         max_length=50,

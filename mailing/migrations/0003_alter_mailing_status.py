@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='mailing',
             name='status',
-            field=models.CharField(blank=True, choices=[('created', 'Создана'), ('running', 'Запущена'), ('completed', 'Завершена')], default='created', max_length=20, verbose_name='Статус'),
+            field=models.CharField(blank=True, choices=[('created', 'Создана'), ('running', 'Запущена'), ('completed', 'Завершена')], default='created', max_length=20, verbose_name='Статус'),    # noqa
         ),
     ]
